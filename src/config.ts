@@ -1,15 +1,15 @@
 export default {
-  secretKey: 'THISISMYSECURETOKEN',
+  secretKey: 'IHZ5ZVnu5=fys.ADSgmPZI]:rV1i4{',
   host: 'http://localhost',
   port: '21465',
   deviceName: 'WppConnect',
   poweredBy: 'WPPConnect-Server',
-  startAllSession: true,
+  startAllSession: false,
   tokenStoreType: 'file',
   maxListeners: 15,
   customUserDataDir: './userDataDir/',
   webhook: {
-    url: null,
+    url: 'http://localhost:3000',
     autoDownload: true,
     uploadS3: false,
     readMessage: true,
