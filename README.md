@@ -1,6 +1,5 @@
 # WPPConnect Team
 
-
 ## _WPPConnect Server_
 
 [![npm version](https://img.shields.io/npm/v/@wppconnect/server.svg?color=green)](https://www.npmjs.com/package/@wppconnect/server)
@@ -11,15 +10,14 @@
 [![Build](https://github.com/wppconnect-team/wppconnect-server/actions/workflows/build.yml/badge.svg)](https://github.com/wppconnect-team/wppconnect-server/actions/workflows/build.yml)
 [![release-it](https://img.shields.io/badge/%F0%9F%93%A6%F0%9F%9A%80-release--it-e10079.svg)](https://github.com/release-it/release-it)
 
-
-
-Wppconnect Server is a ready-to-use API, just download, install, and start using, simple as that.
+Welcome to the **WPPConnect Server** repository, developed by the WPPConnect Team. Our mission is to provide a robust and ready-to-use API for seamless communication with WhatsApp. The server is designed to streamline the process of sending and receiving messages, managing contacts, creating groups, and much more, all while leveraging the power of JavaScript ES6, NodeJS, and a RESTful architecture.
 
 - Javascript ES6
 - NodeJS
 - Restfull
 
 ## Our online channels
+Connect with us across various platforms to stay updated and engage in discussions:
 
 [![Discord](https://img.shields.io/discord/844351092758413353?color=blueviolet&label=Discord&logo=discord&style=flat)](https://discord.gg/JU5JGGKGNG)
 [![Telegram Group](https://img.shields.io/badge/Telegram-Group-32AFED?logo=telegram)](https://t.me/wppconnect)
@@ -27,11 +25,11 @@ Wppconnect Server is a ready-to-use API, just download, install, and start using
 [![YouTube](https://img.shields.io/youtube/channel/subscribers/UCD7J9LG08PmGQrF5IS7Yv9A?label=YouTube)](https://www.youtube.com/c/wppconnect)
 
 ## Documentations
-Access our documentation on [postman](https://documenter.getpostman.com/view/9139457/TzshF4jQ) 
+Detailed documentation and guides are available for your convenience:
 
-Access our documentation on [Swagger](https://wppconnect.io/swagger/wppconnect-server)
-
-Or Swagger UI in your server. Acess router: "IP:PORT/api-docs"
+- [Postman](https://documenter.getpostman.com/view/9139457/TzshF4jQ)
+- [Swagger](https://wppconnect.io/swagger/wppconnect-server)
+- Swagger UI can be accessed on your server through the route: "IP:PORT/api-docs"
 
 ## Features
 
@@ -40,7 +38,8 @@ Or Swagger UI in your server. Acess router: "IP:PORT/api-docs"
 | Multiple Sessions                    | ✔   |
 | Send **text, image, video and docs** | ✔   |
 | Get **contacts list**                | ✔   |
-| Receive messages                     | ✔   |
+| Manage products                      | ✔   |
+| Receive/Send messages                | ✔   |
 | Open/Close Session                   | ✔   |
 | Change Profile/Username              | ✔   |
 | Create Group                         | ✔   |
@@ -57,6 +56,7 @@ Or Swagger UI in your server. Acess router: "IP:PORT/api-docs"
 - Express
 - Nodemon
 - SocketIO
+- S3
 
 ## Installation
 
@@ -74,6 +74,7 @@ npm install
 sudo apt-get install -y libxshmfence-dev libgbm-dev wget unzip fontconfig locales gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils
 
 ```
+
 ## Install google chrome
 
 ```sh
@@ -104,49 +105,129 @@ yarn build
 
 # Configuration
 
-This server use config.json file to define some options, default values are:
+This server use config.ts file to define some options, default values are:
 
 ```javascript
 {
   /* secret key to genereta access token */
-  "secretKey": "THISISMYSECURETOKEN",
-  "host": "http://localhost",
-  "port": "21465",
-  // create userDataDir for each puppeteer instance for working with Multi Device
-  "customUserDataDir": "./userDataDir/",
+  secretKey: 'THISISMYSECURETOKEN',
+  host: 'http://localhost',
+  port: '21465',
+  // Device name for show on whatsapp device
+  deviceName: 'WppConnect',
+  poweredBy: 'WPPConnect-Server',
   // starts all sessions when starting the server.
-  "startAllSession": true,
+  startAllSession: true,
+  tokenStoreType: 'file',
   // sets the maximum global listeners. 0 = infinity.
-  "maxListeners": 15,
-  "webhook": {
-    "url": null,
+  maxListeners: 15,
+  // create userDataDir for each puppeteer instance for working with Multi Device
+  customUserDataDir: './userDataDir/',
+  webhook: {
+    // set default webhook
+    url: null,
     // automatically downloads files to upload to the webhook
-    "autoDownload": true,
+    autoDownload: true,
+    // enable upload to s3
+    uploadS3: false,
+    // set default bucket name on aws s3
+    awsBucketName: null,
     //marks messages as read when the webhook returns ok
-    "readMessage": false,
+    readMessage: true,
     //sends all unread messages to the webhook when the server starts
-    "allUnreadOnStart": true
+    allUnreadOnStart: false,
+    // send all events of message status (read, sended, etc)
+    listenAcks: true,
+    // send all events of contacts online or offline for webook and socket
+    onPresenceChanged: true,
+    // send all events of groups participants changed for webook and socket
+    onParticipantsChanged: true,
+    // send all events of reacted messages for webook and socket
+    onReactionMessage: true,
+    // send all events of poll messages for webook and socket
+    onPollResponse: true,
+    // send all events of revoked messages for webook and socket
+    onRevokedMessage: true,
+    // send all events of labels for webook and socket
+    onLabelUpdated: true,
+  },
+  // send data to chatwoot
+  chatwoot: {
+    sendQrCode: true,
+    sendStatus: true,
   },
   //functionality that archives conversations, runs when the server starts
-  "archive": {
-    "enable": true,
+  archive: {
+    enable: false,
     //maximum interval between filings.
-    "waitTime": 10,
-    "daysToArchive": 45
+    waitTime: 10,
+    daysToArchive: 45,
   },
-  "log": {
-    "level": "error",
-    "logger": [ "console", "file" ]
+  log: {
+    level: 'silly', // Before open a issue, change level to silly and retry a action
+    logger: ['console', 'file'],
   },
-  "createOptions": {
-    "browserArgs": ["--no-sandbox"]
-  }
+  // create options for using on wppconnect-lib
+  createOptions: {
+    browserArgs: [
+      '--disable-web-security',
+      '--no-sandbox',
+      '--disable-web-security',
+      '--aggressive-cache-discard',
+      '--disable-cache',
+      '--disable-application-cache',
+      '--disable-offline-load-stale-cache',
+      '--disk-cache-size=0',
+      '--disable-background-networking',
+      '--disable-default-apps',
+      '--disable-extensions',
+      '--disable-sync',
+      '--disable-translate',
+      '--hide-scrollbars',
+      '--metrics-recording-only',
+      '--mute-audio',
+      '--no-first-run',
+      '--safebrowsing-disable-auto-update',
+      '--ignore-certificate-errors',
+      '--ignore-ssl-errors',
+      '--ignore-certificate-errors-spki-list',
+      '--disable-features=LeakyPeeker' // Disable the browser's sleep mode when idle, preventing the browser from going into sleep mode, this is useful for WhatsApp not to be in economy mode in the background, avoiding possible crashes
+    ],
+  },
+  mapper: {
+    enable: false,
+    prefix: 'tagone-',
+  },
+  // Configurations for connect with database
+  db: {
+    mongodbDatabase: 'tokens',
+    mongodbCollection: '',
+    mongodbUser: '',
+    mongodbPassword: '',
+    mongodbHost: '',
+    mongoIsRemote: true,
+    mongoURLRemote: '',
+    mongodbPort: 27017,
+    redisHost: 'localhost',
+    redisPort: 6379,
+    redisPassword: '',
+    redisDb: 0,
+    redisPrefix: 'docker',
+  },
+  // Your configurations yo upload on AWS
+  aws_s3: {
+    region: 'sa-east-1',
+    access_key_id: '',
+    secret_key: '',
+    // If you already have a bucket created that will be used. Will bestored: you-default-bucket/{session}/{filename}
+    defaultBucketName: ''
+  },
 }
 ```
 
 # Secret Key
 
-Your `secretKey` is inside the `config.json` file. You must change the default value to one that only you know.
+Your `secretKey` is inside the `config.ts` file. You must change the default value to one that only you know.
 
 <!-- ![Peek 2021-03-25 09-33](https://user-images.githubusercontent.com/40338524/112473515-3b310a80-8d4d-11eb-94bb-ff409c91d9b8.gif) -->
 
